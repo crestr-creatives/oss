@@ -18,9 +18,21 @@ router = APIRouter(
 Migrator().run()
 
 
+@router.get("/users", response_model=List[UserDetailSchema])
+def fetch_users(user_pk: Union[str, None] = None):
+    if user_pk:
+        return [format_(pk) for pk in User.all_pks() if user_pk == pk]
+    return [format_(pk) for pk in User.all_pks()]
+
+
 @router.post("/user")
 def create_user(data: UserCreateUpdateSchema):
-    exists = User.find(User.username == data.username).first()
+    exists = None
+    try:
+        exists = User.find(User.username == data.username).first()
+    except:
+        pass
+
     if exists:
         raise HTTPException(status_code=404, detail="Username already exists")
 
@@ -35,13 +47,21 @@ def create_user(data: UserCreateUpdateSchema):
     return user.save()
 
 
-# @router.get("/users", response_model=List[UserDetailSchema])
-@router.get("/users")
-def fetch_users(user_pk: Union[str, None] = None):
-    return User.all_pks()
-    if user_pk:
-        return [format_(pk) for pk in User.all_pks() if user_pk == pk]
-    return [format_(pk) for pk in User.all_pks()]
+@router.put("/user/{pk}", response_model=List[UserCreateUpdateSchema])
+def update_user(pk: str, data: UserCreateUpdateSchema):
+    try:
+        user = User.find(User.pk == pk).first()
+    except:
+        raise HTTPException(status_code=404, detail="Not found.")
+
+    user.update(
+        first_name=data.first_name,
+        last_name=data.last_name,
+        username=data.username,
+        ranking=data.ranking,
+    )
+    user.save()
+    return [user]
 
 @router.patch("/user/{pk}", status_code=204)
 def delete_user(pk: str):
