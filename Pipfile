@@ -9,6 +9,8 @@ uvicorn = {extras = ["standard"], version = "*"}
 redis-om = "*"
 black = "*"
 python-dotenv = "*"
+python-jose = {extras = ["cryptography"], version = "*"}
+passlib = {extras = ["bcrypt"], version = "*"}
 
 [dev-packages]
 
