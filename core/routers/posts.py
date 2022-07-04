@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
 
-from core.models.posts import Post, format_, format_
+from core.models.posts import Post, format_
 
 
 router = APIRouter(
