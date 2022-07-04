@@ -19,6 +19,7 @@ class User(HashModel):
     first_name: str
     last_name: str
     username: Optional[str] = Field(index=True)
+    password: str
     image_url: Optional[str]
     post_count: Optional[int] = None
     ranking: Optional[str] = Ranking.LEVEL_1
