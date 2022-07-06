@@ -13,6 +13,9 @@ class TokenData(BaseModel):
 
 
 class RegisterUserSchema(BaseModel):
+    first_name: Optional[str]
+    last_name: Optional[str]
+    username: str
     email: EmailStr
     password: str
 

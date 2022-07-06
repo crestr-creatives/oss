@@ -9,11 +9,10 @@ from core.models.accounts import Ranking
 class UserCreateUpdateSchema(BaseModel):
     first_name: str
     last_name: str
-    username: str
-    ranking: str = Ranking.LEVEL_1
-    
+
     class Config:
         orm_mode = True
+
 
 class UserDetailSchema(BaseModel):
     id: str
