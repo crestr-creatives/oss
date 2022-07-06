@@ -1,8 +1,9 @@
 import datetime
-from enum import Enum
+from enum import Enum, unique
 from typing import Any, Optional
+from pydantic import EmailStr
 
-from redis_om import Field, HashModel
+from redis_om import Field, HashModel, Migrator
 
 from core.database import redis
 
@@ -16,8 +17,9 @@ class Ranking(str, Enum):
 
 
 class User(HashModel):
-    first_name: str
-    last_name: str
+    first_name: Optional[str]
+    last_name: Optional[str]
+    email: EmailStr = Field(index=True)
     username: Optional[str] = Field(index=True)
     password: str
     image_url: Optional[str]
@@ -40,5 +42,5 @@ def format_(pk: str):
         "image_url": user.image_url,
         "post_count": user.post_count,
         "ranking": user.ranking,
-        "timestamp": user.timestamp
+        "timestamp": user.timestamp,
     }

@@ -15,6 +15,5 @@ redis = get_redis_connection(
     host=os.getenv("HOST"),
     port=os.getenv("PORT"),
     password=os.getenv("PASSWORD"),
-    decode_responses=True
+    decode_responses=True,
 )
-

@@ -10,6 +10,7 @@ router = APIRouter(
     # dependencies=[Depends(get_current_user)],
 )
 
+
 @router.get("/posts")
 def fetch_posts():
     return [format_(pk) for pk in Post.all_pks()]

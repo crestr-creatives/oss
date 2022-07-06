@@ -22,5 +22,5 @@ def format_(pk: str):
         "id": post.pk,
         "title": post.title,
         "body": post.body,
-        "timestamp": post.timestamp
+        "timestamp": post.timestamp,
     }
