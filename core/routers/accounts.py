@@ -2,11 +2,11 @@ import datetime
 from typing import List, Union
 
 from redis_om import Migrator
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 
 from core.models.accounts import User, format_
 from core.schemas.accounts import UserCreateUpdateSchema, UserDetailSchema
-from core.services.accounts import update_user_
+from core.services.accounts import update_user_, update_user_image_
 
 
 router = APIRouter(
@@ -31,12 +31,18 @@ def fetch_users(user_pk: Union[str, None] = None):
     return [format_(pk) for pk in User.all_pks()]
 
 
-@router.put("/user/{pk}", response_model=List[UserDetailSchema])
+@router.put("/user/{pk}/detail", response_model=List[UserDetailSchema])
 def update_user(pk: str, data: UserCreateUpdateSchema):
     user_data = update_user_(pk, data)
     return user_data
 
 
-@router.patch("/user/{pk}", status_code=204)
+@router.patch("/user/{pk}/upload_image", response_model=List[UserDetailSchema])
+def update_user_image(pk: str, data: UploadFile = File(...)):
+    user_data = update_user_image_(pk, data)
+    return user_data
+
+
+@router.patch("/user/{pk}/delete", status_code=204)
 def delete_user(pk: str):
     return User.delete(pk)
