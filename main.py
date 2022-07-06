@@ -7,7 +7,7 @@ from redis_om import HashModel
 
 from core.routers import accounts, auth, posts
 
-app = FastAPI()
+app = FastAPI(title="OSS")
 
 app.include_router(auth.router)
 app.include_router(accounts.router)
