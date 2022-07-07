@@ -1,3 +1,4 @@
+import os
 import datetime
 from enum import Enum
 from typing import Optional
@@ -20,6 +21,7 @@ class Post(HashModel):
     author: str
     title: str
     body: str
+    image_url: Optional[str]
     likes: int
     dislikes: int
     rating: int = Rating.Level_1
@@ -31,12 +33,21 @@ class Post(HashModel):
 
 def format_(pk: str):
     post = Post.get(pk)
+    IMG_DIR = f"static/posts/{post.pk}/"
+
+    def get_avatar():
+        try:
+            path = os.listdir(IMG_DIR)
+        except FileNotFoundError:
+            path = []
+        return path
 
     return {
         "id": post.pk,
         "author": post.pk,
         "title": post.title,
         "body": post.body,
+        "image_url": get_avatar(),
         "likes": post.likes,
         "dislikes": post.dislikes,
         "rating": post.rating,

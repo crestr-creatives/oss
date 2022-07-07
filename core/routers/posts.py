@@ -1,11 +1,12 @@
 import datetime
 from typing import List, Optional
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, File, UploadFile
 
 from core.models.accounts import User
 from core.models.posts import Post, Rating, format_
 from core.schemas.posts import PostCreateUpdateSchema, PostListSchema
+from core.services.posts import update_post_, update_post_image_
 from redis_om import Migrator
 
 from core.services.posts import create_post_
@@ -28,12 +29,24 @@ def fetch_posts(pk: Optional[str] = None):
     return [format_(pk) for pk in Post.all_pks()]
 
 
-@router.post("/create")
+@router.post("/create", response_model=List[PostListSchema])
 def create_post(data: PostCreateUpdateSchema):
     # TODO Authenticated User
     user = User.get(pk="01G79WRVZFX5TYSAAB5KWN7CJ9")
     post_data = create_post_(user, data)
     return post_data
+
+
+@router.put("/{pk}/update", response_model=List[PostListSchema])
+def update_post(pk: str, data: PostCreateUpdateSchema):
+    post_data = update_post_(pk, data)
+    return post_data
+
+
+@router.patch("/{pk}/upload_image", response_model=List[PostListSchema])
+def update_post_image(pk: str, data: UploadFile = File(...)):
+    user_data = update_post_image_(pk, data)
+    return user_data
 
 
 # TODO Use this endpoint to fetch all ids when there's an issue

@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -18,6 +18,7 @@ class PostListSchema(BaseModel):
     author: str
     title: str
     body: str
+    image_url: List[str]
     likes: int
     dislikes: int
     rating: int = Rating.Level_1
