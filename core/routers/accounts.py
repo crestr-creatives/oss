@@ -16,13 +16,6 @@ router = APIRouter(
     # dependencies=[Depends(get_current_user)],
 )
 
-Migrator().run()
-
-# TODO Use this endpoint to fetch all ids when there's an issue
-# @router.get("/users")
-# def fetch_users(user_pk: Union[str, None] = None):
-#     return User.all_pks()
-
 
 @router.get("/users", response_model=List[UserDetailSchema])
 def fetch_users(user_pk: Union[str, None] = None):
