@@ -1,12 +1,10 @@
 import datetime
 import os
 from enum import Enum
-from random import randint
 from typing import Optional
 
-from fastapi.responses import FileResponse
 from pydantic import EmailStr
-from redis_om import Field, HashModel, Migrator
+from redis_om import Field, HashModel
 
 from core.database import redis
 
