@@ -34,7 +34,7 @@ class User(HashModel):
 
 def format_(pk: str):
     user = User.get(pk)
-    IMG_DIR = f"static/{user.pk}/"
+    IMG_DIR = f"static/accounts/{user.pk}/"
 
     def get_avatar():
         try:
