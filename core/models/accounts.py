@@ -1,8 +1,11 @@
 import datetime
-from enum import Enum, unique
-from typing import Any, Optional
-from pydantic import EmailStr
+import os
+from enum import Enum
+from random import randint
+from typing import Optional
 
+from fastapi.responses import FileResponse
+from pydantic import EmailStr
 from redis_om import Field, HashModel, Migrator
 
 from core.database import redis
@@ -33,13 +36,21 @@ class User(HashModel):
 
 def format_(pk: str):
     user = User.get(pk)
+    IMG_DIR = f"static/{user.pk}/"
+
+    def get_avatar():
+        try:
+            path = os.listdir(IMG_DIR)
+        except FileNotFoundError:
+            path = []
+        return path
 
     return {
         "id": user.pk,
         "first_name": user.first_name,
         "last_name": user.last_name,
         "username": user.username,
-        "image_url": user.image_url,
+        "image_url": get_avatar(),
         "post_count": user.post_count,
         "ranking": user.ranking,
         "timestamp": user.timestamp,

@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel
 
@@ -19,7 +19,7 @@ class UserDetailSchema(BaseModel):
     first_name: str
     last_name: str
     username: str
-    image_url: str
+    image_url: List[str]
     post_count: Optional[int]
     ranking: str
     timestamp: Optional[datetime.date]
