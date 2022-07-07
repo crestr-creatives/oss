@@ -20,7 +20,7 @@ def update_user_(pk: str, data: UserCreateUpdateSchema):
 
 def update_user_image_(pk: str, data: UploadFile = File(...)):
     user = User.find(User.pk == pk).first()
-    path = f"static/{user.pk}"
+    path = f"static/accounts/{user.pk}"
 
     if not os.path.exists(path):
         os.makedirs(path)
