@@ -18,7 +18,7 @@ class PostListSchema(BaseModel):
     author: str
     title: str
     body: str
-    image_url: List[str]
+    # image_url: Optional[str]
     likes: int
     dislikes: int
     rating: int = Rating.Level_1
@@ -26,3 +26,13 @@ class PostListSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class PostLikeSchema(BaseModel):
+    user: str
+    like: bool = False
+
+
+class PostDisLikeSchema(BaseModel):
+    user: str
+    dislike: bool = False

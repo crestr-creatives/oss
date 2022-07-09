@@ -4,29 +4,34 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, File, UploadFile
 
 from core.models.accounts import User
-from core.models.posts import Post, Rating, format_
-from core.schemas.posts import PostCreateUpdateSchema, PostListSchema
-from core.services.posts import update_post_, update_post_image_
+from core.models.posts import Post, PostDislike, PostLike, format_post_
+from core.schemas.posts import PostCreateUpdateSchema, PostDisLikeSchema, PostLikeSchema, PostListSchema
+from core.services.posts import (
+    update_post_,
+    update_post_dislike_,
+    update_post_image_,
+    update_post_likes_,
+)
 from redis_om import Migrator
 
 from core.services.posts import create_post_
 
 
 router = APIRouter(
-    prefix="/posts",
-    tags=["posts"],
+    prefix="/articles",
+    tags=["articles"],
     responses={404: {"description": "Not found"}},
     # dependencies=[Depends(get_current_user)],
 )
 
-Migrator().run()
-
 
 @router.get("", response_model=List[PostListSchema])
-def fetch_posts(pk: Optional[str] = None):
-    if pk:
-        return [format_(pk) for pk in Post.all_pks() if pk == pk]
-    return [format_(pk) for pk in Post.all_pks()]
+def fetch_posts(post_pk: Optional[str] = None):
+    if post_pk:
+        data = [format_post_(pk) for pk in Post.all_pks() if post_pk == pk]
+        print(len(data))
+        return data
+    return [format_post_(pk) for pk in Post.all_pks()]
 
 
 @router.post("/create", response_model=List[PostListSchema])
@@ -40,6 +45,18 @@ def create_post(data: PostCreateUpdateSchema):
 @router.put("/{pk}/update", response_model=List[PostListSchema])
 def update_post(pk: str, data: PostCreateUpdateSchema):
     post_data = update_post_(pk, data)
+    return post_data
+
+
+@router.patch("/{pk}/like", response_model=List[PostListSchema])
+def update_post_likes(pk: str, data: PostLikeSchema):
+    post_data = update_post_likes_(pk, data)
+    return post_data
+
+
+@router.patch("/{pk}/dislike", response_model=List[PostListSchema])
+def update_post_likes(pk: str, data: PostDisLikeSchema):
+    post_data = update_post_dislike_(pk, data)
     return post_data
 
 
