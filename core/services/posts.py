@@ -9,6 +9,7 @@ from core.models.posts import (
     Post,
     PostDislike,
     PostDislike,
+    PostImage,
     PostLike,
     Rating,
     format_dislikes_,
@@ -45,16 +46,27 @@ def update_post_(pk: str, data: PostCreateUpdateSchema):
 
 
 def update_post_image_(pk: str, data: UploadFile = File(...)):
-    post = Post.find(Post.pk == pk).first()
-    path = f"static/posts/{post.pk}"
+    try:
+        post = Post.find(Post.pk == pk).first()
+    except:
+        raise HTTPException(status_code=404, detail="Not found.")
 
+    path = f"static/posts/{post.pk}"
     if not os.path.exists(path):
         os.makedirs(path)
 
     with open(f"{path}/{data.filename}", "wb+") as file_object:
         shutil.copyfileobj(data.file, file_object)
 
+    post_image = PostImage(post=post.pk, image_url=data.filename, default=False)
+    post_image.save()
+
     return [format_post_(pk) for pk in Post.all_pks() if post.pk == pk]
+
+
+def get_post_images_(pk):
+    post_images = [img for img in PostImage.all_pks() if img.post == pk]
+    return post_images
 
 
 def update_post_likes_(pk: str, data: PostLike):
