@@ -4,9 +4,15 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, File, UploadFile
 
 from core.models.accounts import User
-from core.models.posts import Post, PostDislike, PostLike, format_post_
-from core.schemas.posts import PostCreateUpdateSchema, PostDisLikeSchema, PostLikeSchema, PostListSchema
+from core.models.posts import Post, format_post_
+from core.schemas.posts import (
+    PostCreateUpdateSchema,
+    PostDisLikeSchema,
+    PostLikeSchema,
+    PostListSchema,
+)
 from core.services.posts import (
+    get_post_images_,
     update_post_,
     update_post_dislike_,
     update_post_image_,
@@ -60,8 +66,14 @@ def update_post_likes(pk: str, data: PostDisLikeSchema):
     return post_data
 
 
+@router.get("/{pk}/images", response_model=List[PostListSchema])
+def get_post_images(pk: str):
+    post_images = get_post_images_(pk)
+    return post_images
+
+
 @router.patch("/{pk}/upload_image", response_model=List[PostListSchema])
-def update_post_image(pk: str, data: UploadFile = File(...)):
+def add_post_image(pk: str, data: UploadFile = File(...)):
     user_data = update_post_image_(pk, data)
     return user_data
 

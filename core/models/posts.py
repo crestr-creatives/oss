@@ -33,9 +33,10 @@ class Post(HashModel):
         database = DATABASE
 
 
-class PostImages(HashModel):
+class PostImage(HashModel):
     post: int
     image_url: str
+    default: str
 
     class Meta:
         database = DATABASE
@@ -80,6 +81,17 @@ def format_post_(pk: str):
         "dislikes": post.dislikes,
         "rating": post.rating,
         "timestamp": post.timestamp,
+    }
+
+
+def format_post_image_(pk: str):
+    post_image = PostImage.get(pk)
+
+    return {
+        "id": post_image.pk,
+        "post": post_image.post,
+        "image_url": post_image.image_url,
+        "default": post_image.default,
     }
 
 
