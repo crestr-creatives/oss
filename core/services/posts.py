@@ -3,8 +3,18 @@ import datetime
 import shutil
 
 from fastapi import File, HTTPException, UploadFile
+from core.models.accounts import User
 
-from core.models.posts import Post, Rating, format_
+from core.models.posts import (
+    Post,
+    PostDislike,
+    PostDislike,
+    PostLike,
+    Rating,
+    format_dislikes_,
+    format_likes_,
+    format_post_,
+)
 from core.schemas.posts import PostCreateUpdateSchema
 
 
@@ -31,7 +41,7 @@ def update_post_(pk: str, data: PostCreateUpdateSchema):
 
     post.update(first_name=data.first_name, last_name=data.last_name)
     post.save()
-    return [format_(pk) for pk in Post.all_pks() if post.pk == pk]
+    return [format_post_(pk) for pk in Post.all_pks() if post.pk == pk]
 
 
 def update_post_image_(pk: str, data: UploadFile = File(...)):
@@ -44,4 +54,36 @@ def update_post_image_(pk: str, data: UploadFile = File(...)):
     with open(f"{path}/{data.filename}", "wb+") as file_object:
         shutil.copyfileobj(data.file, file_object)
 
-    return [format_(pk) for pk in Post.all_pks() if post.pk == pk]
+    return [format_post_(pk) for pk in Post.all_pks() if post.pk == pk]
+
+
+def update_post_likes_(pk: str, data: PostLike):
+    try:
+        post = Post.find(Post.pk == pk).first()
+        user = User.find(User.pk == data.user).first()
+    except:
+        raise HTTPException(status_code=404, detail="Not found.")
+
+    if data.like:
+        like = PostLike(post=post.pk, user=user.pk, like=data.like)
+        like.save()
+        post.likes += 1
+        post.save()
+
+    return [format_likes_(pk) for pk in PostLike.all_pks() if post.pk == pk]
+
+
+def update_post_dislike_(pk: str, data: PostDislike):
+    try:
+        post = Post.find(Post.pk == pk).first()
+        user = User.find(User.pk == data.user).first()
+    except:
+        raise HTTPException(status_code=404, detail="Not found.")
+
+    if data.dislike:
+        dislike = PostDislike(post=post.pk, user=user.pk, dislike=data.dislike)
+        dislike.save()
+        post.dislikes += 1
+        post.save()
+
+    return [format_dislikes_(pk) for pk in PostDislike.all_pks() if post.pk == pk]
