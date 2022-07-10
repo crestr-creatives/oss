@@ -1,9 +1,10 @@
+from email.policy import default
 import os
 import datetime
 from enum import Enum
 from typing import List, Optional
 
-from redis_om import HashModel
+from redis_om import Field, HashModel
 
 from core.database import redis
 
@@ -23,7 +24,7 @@ class Post(HashModel):
     author: str
     title: str
     body: str
-    # image_url: Optional[str]
+    # image_url: str
     likes: int
     dislikes: int
     rating: int = Rating.Level_1
@@ -34,9 +35,10 @@ class Post(HashModel):
 
 
 class PostImage(HashModel):
-    post: int
+    post: str = Field(index=True)
     image_url: str
     default: str
+    timestamp: Optional[datetime.date] = datetime.datetime
 
     class Meta:
         database = DATABASE
@@ -64,19 +66,19 @@ def format_post_(pk: str):
     post = Post.get(pk)
     IMG_DIR = f"static/posts/{post.pk}/"
 
-    def get_avatar():
+    def get_default_image_url():
         try:
-            path = os.listdir(IMG_DIR)
-        except FileNotFoundError:
-            path = []
-        return path
+            post_image = PostImage.find(PostImage.post == post, default == True)
+        except:
+            post_image =  PostImage.find(PostImage.post == post).first()
+        return post_image
 
     return {
         "id": post.pk,
         "author": post.pk,
         "title": post.title,
         "body": post.body,
-        "image_url": get_avatar(),
+        # "image_url": get_default_image_url(),
         "likes": post.likes,
         "dislikes": post.dislikes,
         "rating": post.rating,
@@ -92,6 +94,7 @@ def format_post_image_(pk: str):
         "post": post_image.post,
         "image_url": post_image.image_url,
         "default": post_image.default,
+        "timestamp": post_image.timestamp,
     }
 
 
