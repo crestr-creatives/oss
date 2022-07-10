@@ -15,6 +15,7 @@ from core.models.posts import (
     format_dislikes_,
     format_likes_,
     format_post_,
+    format_post_image_,
 )
 from core.schemas.posts import PostCreateUpdateSchema
 
@@ -58,15 +59,29 @@ def update_post_image_(pk: str, data: UploadFile = File(...)):
     with open(f"{path}/{data.filename}", "wb+") as file_object:
         shutil.copyfileobj(data.file, file_object)
 
-    post_image = PostImage(post=post.pk, image_url=data.filename, default=False)
+    post_image = PostImage(
+        post=post.pk,
+        image_url=data.filename,
+        default=False,
+        timezone=datetime.date.today(),
+    )
     post_image.save()
 
-    return [format_post_(pk) for pk in Post.all_pks() if post.pk == pk]
+    return
 
 
-def get_post_images_(pk):
-    post_images = [img for img in PostImage.all_pks() if img.post == pk]
-    return post_images
+def get_post_images_(post_pk):
+    post_images_list = []
+    post = Post.find(Post.pk == post_pk).first()
+
+    # for pk in PostImage.all_pks():
+    #     img = format_post_image_(pk)
+    #     if img["post"] == post.pk:
+    #         post_images_list.append(img)
+
+    post_images_list = [format_post_image_(pk) for pk in PostImage.all_pks() if post.pk == format_post_image_(pk)["post"]]
+
+    return post_images_list
 
 
 def update_post_likes_(pk: str, data: PostLike):

@@ -18,11 +18,28 @@ class PostListSchema(BaseModel):
     author: str
     title: str
     body: str
-    # image_url: Optional[str]
+    # image_url: str
     likes: int
     dislikes: int
     rating: int = Rating.Level_1
     timestamp: Optional[datetime.date] = datetime.datetime
+
+    class Config:
+        orm_mode = True
+
+
+class PostImageSchema(BaseModel):
+    post: str
+    image_url: str
+    default: str
+    timestamp: Optional[datetime.date] = datetime.datetime
+
+    class Config:
+        orm_mode = True
+
+
+class PostImageListSchema(BaseModel):
+    images: List[str]
 
     class Config:
         orm_mode = True

@@ -4,10 +4,12 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, File, UploadFile
 
 from core.models.accounts import User
-from core.models.posts import Post, format_post_
+from core.models.posts import Post, PostImage, format_post_
 from core.schemas.posts import (
     PostCreateUpdateSchema,
     PostDisLikeSchema,
+    PostImageListSchema,
+    PostImageSchema,
     PostLikeSchema,
     PostListSchema,
 )
@@ -34,9 +36,7 @@ router = APIRouter(
 @router.get("", response_model=List[PostListSchema])
 def fetch_posts(post_pk: Optional[str] = None):
     if post_pk:
-        data = [format_post_(pk) for pk in Post.all_pks() if post_pk == pk]
-        print(len(data))
-        return data
+        return [format_post_(pk) for pk in Post.all_pks() if post_pk == pk]
     return [format_post_(pk) for pk in Post.all_pks()]
 
 
@@ -61,21 +61,21 @@ def update_post_likes(pk: str, data: PostLikeSchema):
 
 
 @router.patch("/{pk}/dislike", response_model=List[PostListSchema])
-def update_post_likes(pk: str, data: PostDisLikeSchema):
+def update_post_dislikes(pk: str, data: PostDisLikeSchema):
     post_data = update_post_dislike_(pk, data)
     return post_data
 
 
-@router.get("/{pk}/images", response_model=List[PostListSchema])
+@router.get("/{pk}/images", response_model=List[PostImageSchema])
 def get_post_images(pk: str):
     post_images = get_post_images_(pk)
     return post_images
 
 
-@router.patch("/{pk}/upload_image", response_model=List[PostListSchema])
+@router.patch("/{pk}/upload_image", response_model=PostImageListSchema)
 def add_post_image(pk: str, data: UploadFile = File(...)):
-    user_data = update_post_image_(pk, data)
-    return user_data
+    update_post_image_(pk, data)
+    return
 
 
 # TODO Use this endpoint to fetch all ids when there's an issue
