@@ -29,9 +29,10 @@ class PostListSchema(BaseModel):
 
 
 class PostImageSchema(BaseModel):
+    id: str
     post: str
     image_url: str
-    default: str
+    default: bool
     timestamp: Optional[datetime.date] = datetime.datetime
 
     class Config:

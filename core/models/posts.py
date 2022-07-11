@@ -45,8 +45,8 @@ class PostImage(HashModel):
 
 
 class PostLike(HashModel):
-    post: str
-    user: str
+    post: str = Field(index=True)
+    user: str = Field(index=True)
     like: str
 
     class Meta:
@@ -68,9 +68,11 @@ def format_post_(pk: str):
 
     def get_default_image_url():
         try:
-            post_image = PostImage.find(PostImage.post == post, default == True)
+            post_image = PostImage.find(
+                (PostImage.post == post) & (PostImage.default == True)
+            )
         except:
-            post_image =  PostImage.find(PostImage.post == post).first()
+            post_image = PostImage.find(PostImage.post == post).first()
         return post_image
 
     return {
