@@ -74,12 +74,11 @@ def get_post_images_(post_pk):
     post_images_list = []
     post = Post.find(Post.pk == post_pk).first()
 
-    # for pk in PostImage.all_pks():
-    #     img = format_post_image_(pk)
-    #     if img["post"] == post.pk:
-    #         post_images_list.append(img)
-
-    post_images_list = [format_post_image_(pk) for pk in PostImage.all_pks() if post.pk == format_post_image_(pk)["post"]]
+    post_images_list = [
+        format_post_image_(pk)
+        for pk in PostImage.all_pks()
+        if post.pk == format_post_image_(pk)["post"]
+    ]
 
     return post_images_list
 
@@ -91,7 +90,13 @@ def update_post_likes_(pk: str, data: PostLike):
     except:
         raise HTTPException(status_code=404, detail="Not found.")
 
-    if data.like:
+    exists = [
+        format_likes_(pk)
+        for pk in PostLike.all_pks()
+        if format_likes_(pk)["post"] == post.pk and format_likes_(pk)["user"] == user.pk
+    ]
+
+    if not exists and data.like:
         like = PostLike(post=post.pk, user=user.pk, like=data.like)
         like.save()
         post.likes += 1
@@ -107,7 +112,14 @@ def update_post_dislike_(pk: str, data: PostDislike):
     except:
         raise HTTPException(status_code=404, detail="Not found.")
 
-    if data.dislike:
+    exists = [
+        format_dislikes_(pk)
+        for pk in PostDislike.all_pks()
+        if format_dislikes_(pk)["post"] == post.pk
+        and format_dislikes_(pk)["user"] == user.pk
+    ]
+
+    if not exists and data.dislike:
         dislike = PostDislike(post=post.pk, user=user.pk, dislike=data.dislike)
         dislike.save()
         post.dislikes += 1
