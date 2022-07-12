@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import List
 from uuid import uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -6,11 +7,14 @@ from fastapi.security import OAuth2PasswordRequestForm
 from redis_om import NotFoundError
 
 from core.models.accounts import User
+from core.schemas.accounts import UserDetailSchema
 from core.schemas.auth import (
     LoginSchema,
+    PasswordChangeSchema,
     RegisterUserSchema,
 )
 from core.schemas.auth import Token
+from core.services.auth import change_password_
 from core.utils import (
     create_access_token,
     get_current_user,
@@ -68,3 +72,10 @@ def register(data: RegisterUserSchema):
     access_token = create_access_token(data={"sub": user.email})
     data = {"email": user.email, "access_token": access_token, "token_type": "bearer"}
     return data
+
+
+# TODO Change pk to request.user
+@router.post("/change_password", response_model=List[UserDetailSchema])
+def change_password(pk: str, data: PasswordChangeSchema):
+    user_data = change_password_(pk, data)
+    return user_data

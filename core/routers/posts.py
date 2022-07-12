@@ -23,13 +23,14 @@ from core.services.posts import (
 from redis_om import Migrator
 
 from core.services.posts import create_post_
+from core.utils import get_current_user
 
 
 router = APIRouter(
     prefix="/articles",
     tags=["articles"],
     responses={404: {"description": "Not found"}},
-    # dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user)],
 )
 
 

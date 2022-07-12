@@ -7,13 +7,14 @@ from fastapi import APIRouter, Depends, File, HTTPException, UploadFile
 from core.models.accounts import User, format_
 from core.schemas.accounts import UserCreateUpdateSchema, UserDetailSchema
 from core.services.accounts import update_user_, update_user_image_
+from core.utils import get_current_user
 
 
 router = APIRouter(
     prefix="/auth",
     tags=["auth"],
     responses={404: {"description": "Not found"}},
-    # dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(get_current_user)],
 )
 
 

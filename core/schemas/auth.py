@@ -26,3 +26,8 @@ class LoginSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class PasswordChangeSchema(BaseModel):
+    old_password: str
+    new_password: str

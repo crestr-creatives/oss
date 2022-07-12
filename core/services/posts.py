@@ -3,8 +3,9 @@ import datetime
 import shutil
 
 from fastapi import File, HTTPException, UploadFile
-from core.models.accounts import User
+from redis_om.model import NotFoundError
 
+from core.models.accounts import User
 from core.models.posts import (
     Post,
     PostDislike,
@@ -71,9 +72,12 @@ def update_post_image_(pk: str, data: UploadFile = File(...)):
 
 
 def get_post_images_(post_pk):
-    post_images_list = []
-    post = Post.find(Post.pk == post_pk).first()
+    try:
+        post = Post.find(Post.pk == post_pk).first()
+    except NotFoundError:
+        raise HTTPException(status_code=404, detail="Not found.")
 
+    post_images_list = []
     post_images_list = [
         format_post_image_(pk)
         for pk in PostImage.all_pks()
